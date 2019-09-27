@@ -1,0 +1,91 @@
+<div class="ui container">
+  <h2 class="ui center aligned header">
+    User Profile
+    <i class="ui user outline icon"></i>
+  </h2>
+</div>
+<div class="centered aligned">
+  <% if current_user.friends.include?(@user) || current_user == @user %>
+
+      <%= render "shared/postform", locals: { object: @user, from: 'user' } %>
+    <% Post.mine_and_friends(@user).each do |post| %>
+      <%= render 'shared/display_post', locals: {object: post, from: 'user', user: @user} %>
+    <% end %>
+  <% end %>
+
+  <% content_for :left_side do %>
+    <div class="ui card">
+      <div class="image">
+        <% if @user.image.nil? %>
+          <%= image_tag('profile.jpg', alt: "profile-image") %>
+        <% else %>
+          <%= image_tag(@user.image, alt: "profile-image") %>
+        <% end %>
+      </div>
+      <div class="content">
+        <div class="header"><%= "#{@user.name} #{@user.lastname}" %></div>
+        <div class="meta">
+          <a><%= @user.email %></a>
+        </div>
+        <div class="description">
+          Needs to fullfill
+        </div>
+      </div>
+      <div class="extra content">
+      <span class="right floated">
+        Joined in <%= @user.created_at.year %>
+      </span>
+        <span>
+        <i class="user icon"></i>
+          <%= @user.friendships.confirmed.count %> Friends
+      </span>
+      </div>
+      <% if @is_pending %>
+        <div class="extra content">
+          <div class="right floated">
+            <p class="meta">Friend request sent</p>
+          </div>
+        </div>
+      <% elsif @is_incoming %>
+        <div class="extra content">
+          <div class="right floated">
+            <p class="meta"><%= @user.name %> sent you a friend request</p>
+          </div>
+        </div>
+      <% elsif @same_profile || @already_friends %>
+        <div></div>
+      <% else %>
+        <%= link_to friendships_create_path(friend_id: @user) do %>
+          <div class="ui bottom attached button">
+            <i class="add icon"></i>
+            Add Friend
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <br>
+    <% if !@user.friends.empty? %>
+      <div class="ui card">
+        <div class="ui middle aligned selection divided list">
+          <% @user.friends.each do |friend| %>
+            <%= link_to user_path(friend.id), class: "item" do %>
+              <% if friend.image.nil? %>
+                <%= image_tag('profile.jpg', class: "ui avatar image", alt: "profile-image") %>
+              <% else %>
+                <%= image_tag(friend.image, class: "ui avatar image", alt: "profile-image") %>
+              <% end %>
+              <div class="content">
+                <div class="ui header floated right"><%= friend.name %></div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% content_for :right_side do %>
+    <%= render 'shared/notif_bar'%>
+  <% end %>
+</div>
+

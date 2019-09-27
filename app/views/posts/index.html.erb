@@ -1,0 +1,21 @@
+<div class="ui container">
+  <h2 class="ui center aligned header">
+    Post Index
+    <i class="ui envelope open outline icon"></i>
+  </h2>
+</div>
+<br>
+<%= render "shared/postform", locals: { object: current_user, from: 'index' } %>
+<br>
+<div class="centered aligned">
+  <% @posts.each do |post| %>
+    <%= render 'shared/display_post', locals: { object: post, from: 'index'} %>
+  <% end %>
+  <br>
+  <br>
+  <%= render 'shared/columns' %>
+  <br>
+  <% content_for :right_side do %>
+    <%= render 'shared/notif_bar'%>
+  <% end %>
+</div>
